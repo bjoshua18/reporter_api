@@ -2,6 +2,7 @@ import express from 'express'
 import dotenv from 'dotenv'
 import morgan from 'morgan'
 import cors from 'cors'
+import { bike } from "./routes";
 
 const app = express()
 dotenv.config()
@@ -15,6 +16,6 @@ app.use(cors())
 app.use(express.json())
 
 // Routes
-
+app.use('/api/bikes', bike)
 
 export default app
