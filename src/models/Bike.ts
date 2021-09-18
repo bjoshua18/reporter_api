@@ -1,7 +1,7 @@
 import { model, Schema, Document } from 'mongoose'
 
 const schema = new Schema({
-  license_number: { type: String, required: true },
+  license_number: { type: String, required: true, unique: true },
   color: { type: String, required: true },
   type: { type: String, required: true },
   owner_name: { type: String, required: true },
