@@ -2,7 +2,7 @@ import express from 'express'
 import dotenv from 'dotenv'
 import morgan from 'morgan'
 import cors from 'cors'
-import { bike, department } from './routes'
+import { bike, department, officer } from './routes'
 import {startConnection} from './database'
 
 const app = express()
@@ -21,5 +21,6 @@ app.use(express.json())
 // Routes
 app.use('/api/bikes', bike)
 app.use('/api/departments', department)
+app.use('/api/officers', officer)
 
 export default app
