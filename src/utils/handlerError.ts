@@ -1,7 +1,9 @@
 import { Response } from 'express'
+import { getResponse } from './utils';
 
 export const handlerError = (err: any, res: Response) => {
-  return res.status(500).json({
-    errors: [err.message]
+  return getResponse(res, {
+    error: err.message,
+    status_code: 500
   })
 }
