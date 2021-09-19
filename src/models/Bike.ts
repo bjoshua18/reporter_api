@@ -1,4 +1,4 @@
-import {model, Schema, Document, PopulatedDoc} from 'mongoose'
+import { model, Schema, Document } from 'mongoose'
 import { IOfficer } from './Officer'
 
 const schema = new Schema({
@@ -25,4 +25,4 @@ export interface IBike extends Document {
   officer?: IOfficer['_id']
 }
 
-export default model<IBike>('Bike', schema)
+export default class Bike extends model<IBike>('Bike', schema) { }

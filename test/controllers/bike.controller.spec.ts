@@ -1,25 +1,18 @@
-require('../config')
+import '../config'
 import request from 'supertest'
 import assert from 'assert'
 import app from '../../src/app'
 import { Bike } from '../../src/models'
+import { factory } from '../factories'
 
 describe('Bikes', () => {
   beforeEach( done => {
     Bike.deleteMany({}, done)
   })
 
-  const data = {
-    license_number: 'A3729104',
-    color: 'black',
-    type: 'standard',
-    owner_name: 'Test Owner',
-    theft_description: 'Test description',
-    address_theft: 'Test Street'
-  }
-
   describe('GET /bikes', () => {
-    it('should GET all bike reports', done => {
+    it('should GET all bike reports', async () => {
+      await factory.createMany<Bike>('bike', 3)
       request(app)
         .get('/api/bikes')
         .expect('Content-Type', /json/)
@@ -27,26 +20,21 @@ describe('Bikes', () => {
         .expect(res => {
           assert.ok(res.body.data)
           assert.ok(Array.isArray(res.body.data))
-          assert.equal(res.body.data.length,0)
+          assert.equal(res.body.data.length,3)
         })
-        .end(done)
     })
   })
 
   describe('GET /bikes/:id', () => {
-    it('should GET a specific bike report', done => {
-      const bike = new Bike(data)
-      bike.save((err, bike) => {
-        request(app)
-          .get(`/api/bikes/${bike.id}`)
-          .expect(200)
-          .expect(res => {
-            assert.ok(res.body.data)
-            assert.equal(res.body.data.license_number, bike.license_number)
-          })
-          .end(done)
-      })
-
+    it('should GET a specific bike report', async () => {
+      const bike = await factory.create<Bike>('bike')
+      request(app)
+        .get(`/api/bikes/${bike.id}`)
+        .expect(200)
+        .expect(res => {
+          assert.ok(res.body.data)
+          assert.equal(res.body.data.license_number, bike.license_number)
+        })
     })
 
     context('given a fake id', () => {
@@ -64,7 +52,8 @@ describe('Bikes', () => {
   })
 
   describe('POST /bikes', () => {
-    it('should save a bike report', done => {
+    it('should save a bike report', async () => {
+      const data = await factory.attrs<Bike>('bike')
       request(app)
         .post('/api/bikes')
         .send(data)
@@ -77,11 +66,11 @@ describe('Bikes', () => {
           assert.equal(res.body.status, 'created')
           assert.equal(res.body.data.license_number, data.license_number)
         })
-        .end(done)
     })
 
     context('given incomplete data', () => {
-      it('should throw a error', done => {
+      it('should throw a error', async () => {
+        const data = await factory.attrs<Bike>('bike')
         request(app)
           .post('/api/bikes')
           .send({...data, license_number: null})
@@ -91,27 +80,23 @@ describe('Bikes', () => {
           .expect(res => {
             assert.ok(res.body.error)
           })
-          .end(done)
       })
     })
   })
 
   describe('PUT /bikes/:id', () => {
-    it('should update fields', done => {
-      const bike = new Bike(data)
-      bike.save((err, bike) => {
-        request(app)
-          .put(`/api/bikes/${bike.id}`)
-          .send({ owner_name: 'Anonymous', color: 'white' })
-          .expect(200)
-          .expect(res => {
-            assert.ok(res.body.data)
-            assert.equal(res.body.data.owner_name, 'Anonymous')
-            assert.equal(res.body.data.color, 'white')
-            assert.equal(res.body.data.license_number, bike.license_number)
-          })
-          .end(done)
-      })
+    it('should update fields', async () => {
+      const bike = await factory.create<Bike>('bike')
+      request(app)
+        .put(`/api/bikes/${bike.id}`)
+        .send({ owner_name: 'Anonymous', color: 'white' })
+        .expect(200)
+        .expect(res => {
+          assert.ok(res.body.data)
+          assert.equal(res.body.data.owner_name, 'Anonymous')
+          assert.equal(res.body.data.color, 'white')
+          assert.equal(res.body.data.license_number, bike.license_number)
+        })
     })
 
     context('given a fake id', () => {
@@ -130,18 +115,15 @@ describe('Bikes', () => {
   })
 
   describe('DELETE /bikes/:id', () => {
-    it('should DELETE a specific bike report', done => {
-      const bike = new Bike(data)
-      bike.save((err, bike) => {
-        request(app)
-          .delete(`/api/bikes/${bike.id}`)
-          .expect(200)
-          .expect(res => {
-            assert.ok(res.body.data)
-            assert.equal(res.body.data.license_number, bike.license_number)
-          })
-          .end(done)
-      })
+    it('should DELETE a specific bike report', async () => {
+      const bike = await factory.create<Bike>('bike')
+      request(app)
+        .delete(`/api/bikes/${bike.id}`)
+        .expect(200)
+        .expect(res => {
+          assert.ok(res.body.data)
+          assert.equal(res.body.data.license_number, bike.license_number)
+        })
     })
 
     context('given a fake id', () => {

@@ -5,7 +5,7 @@ const schema = new Schema({
   code: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   address: { type: String, required: true },
-  officers: [{ ref: 'Officer', type: Schema.Types.ObjectId, default: [] }]
+  officers: [{ ref: 'Officer', type: Schema.Types.ObjectId }]
 })
 
 export interface IDepartment extends Document {
@@ -15,4 +15,4 @@ export interface IDepartment extends Document {
   officers: Array<IOfficer['_id']>
 }
 
-export default model<IDepartment>('Department', schema)
+export default class Department extends model<IDepartment>('Department', schema) { }

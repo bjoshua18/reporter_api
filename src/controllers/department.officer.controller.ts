@@ -5,7 +5,8 @@ import { getResponse } from '../utils/utils'
 
 export async function index(req: Request, res: Response): Promise<Response> {
   try {
-    const officers = await Officer.find()
+    const { department } = res.locals
+    const officers = await department.officers
     return getResponse(res, { data: officers })
   } catch (e) {
     return handlerError(e, res)
@@ -13,21 +14,20 @@ export async function index(req: Request, res: Response): Promise<Response> {
 }
 
 export async function show(req: Request, res: Response): Promise<Response> {
-  try {
-    const officer = await Officer.findById(req.params.id)
-    return officer
-      ? getResponse(res, { data: officer })
-      : OfficerNotFoundResponse(res)
-  } catch (e) {
-    return handlerError(e, res)
-  }
+  const { department } = res.locals
+  const officer = getOfficer(department, req.params.officer_id)
+  return officer
+    ? getResponse(res, { data: officer })
+    : OfficerNotFoundResponse(res)
 }
 
 export async function store(req: Request, res: Response): Promise<Response> {
-  const { plate_number, name, department } = req.body
+  const { department } = res.locals
+  const { plate_number, name } = req.body
   try {
-    const officer = new Officer({ plate_number, name, department })
+    const officer = new Officer({ plate_number, name, department: department.id })
     await officer.save()
+
     return getResponse(res, { data: officer, status: 'created', status_code: 201 })
   } catch (e) {
     return handlerError(e, res)
@@ -35,11 +35,12 @@ export async function store(req: Request, res: Response): Promise<Response> {
 }
 
 export async function update(req: Request, res: Response): Promise<Response> {
-  const { name, department } = req.body
+  const { department } = res.locals
+  const { name } = req.body
   try {
-    const officer = await Officer.findByIdAndUpdate(
-      req.params.id,
-      { name, department },
+    const officer = await Officer.findOneAndUpdate(
+      { id: req.params.officer_id, department: department.id},
+      { name },
       { new: true }
     )
     return officer
@@ -51,14 +52,19 @@ export async function update(req: Request, res: Response): Promise<Response> {
 }
 
 export async function destroy(req: Request, res: Response): Promise<Response> {
+  const { department } = res.locals
   try {
-    const officer = await Officer.findByIdAndRemove(req.params.id)
+    const officer = await Officer.findOneAndRemove({ id: req.params.id, department: department.id })
     return officer
       ? getResponse(res, { data: officer })
       : OfficerNotFoundResponse(res)
   } catch (e) {
     return handlerError(e, res)
   }
+}
+
+function getOfficer(department: { officers: typeof Officer[] }, officer_id: string) {
+  return department.officers.find((o: any) => o.id === officer_id)
 }
 
 function OfficerNotFoundResponse(res: Response) {

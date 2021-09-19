@@ -1,22 +1,18 @@
-require('../config')
+import '../config'
 import request from 'supertest'
 import assert from 'assert'
 import app from '../../src/app'
 import { Department } from '../../src/models'
+import { factory } from '../factories'
 
 describe('Departments', () => {
   beforeEach(done => {
     Department.deleteMany({}, done)
   })
 
-  const data = {
-    code: 'D9427381',
-    name: 'Department of Test',
-    address: 'Test City'
-  }
-
   describe('GET /departments', () => {
-    it('should GET all departments', done => {
+    it('should GET all departments', async () => {
+      await factory.createMany<Department>('department', 3)
       request(app)
         .get('/api/departments')
         .expect('Content-Type', /json/)
@@ -25,24 +21,21 @@ describe('Departments', () => {
           assert.equal(res.body.status, 'OK')
           assert.ok(res.body.data)
           assert.ok(Array.isArray(res.body.data))
+          assert.equal(res.body.data.length, 3)
         })
-        .end(done)
     })
   })
 
   describe('GET /departments/:id', () => {
-    it('should GET a specific department', done => {
-      const department = new Department(data)
-      department.save((err, department) => {
-        request(app)
-          .get(`/api/departments/${department.id}`)
-          .expect(200)
-          .expect(res => {
-            assert.ok(res.body.data)
-            assert.equal(res.body.data.code, department.code)
-          })
-          .end(done)
-      })
+    it('should GET a specific department', async () => {
+      const department = await factory.create<Department>('department')
+      request(app)
+        .get(`/api/departments/${department.id}`)
+        .expect(200)
+        .expect(res => {
+          assert.ok(res.body.data)
+          assert.equal(res.body.data.code, department.code)
+        })
     })
 
     context('given a fake id', () => {
@@ -60,10 +53,11 @@ describe('Departments', () => {
   })
 
   describe('POST /departments', () => {
-    it('should save a department', done => {
+    it('should save a department', async () => {
+      const dep_attrs = await factory.attrs<Department>('department')
       request(app)
         .post('/api/departments')
-        .send(data)
+        .send(dep_attrs)
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(201)
@@ -71,42 +65,39 @@ describe('Departments', () => {
           assert.ok(res.body.data)
           assert.ok(res.body.data._id)
           assert.equal(res.body.status, 'created')
-          assert.equal(res.body.data.code, data.code)
+          assert.equal(res.body.data.code, dep_attrs.code)
         })
-        .end(done)
     })
 
     context('given incomplete data', () => {
-      it('should throw a error', done => {
+      it('should throw a error', async () => {
+        const dep_attrs = await factory.attrs<Department>('department')
         request(app)
           .post('/api/departments')
-          .send({...data, code: null})
+          .send({...dep_attrs, code: null})
           .set('Accept', 'application/json')
           .expect(500)
           .expect(res => {
             assert.ok(res.body.error)
           })
-          .end(done)
       })
     })
   })
 
   describe('PUT /departments/:id', () => {
-    it('should update fields', done => {
-      const department = new Department(data)
-      department.save((err, department) => {
-        request(app)
-          .put(`/api/departments/${department.id}`)
-          .send({ name: 'Other name', address: 'Other address' })
-          .expect(200)
-          .expect(res => {
-            assert.ok(res.body.data)
-            assert.equal(res.body.data.name, 'Other name')
-            assert.equal(res.body.data.address, 'Other address')
-            assert.equal(res.body.data.code, department.code)
-          })
-          .end(done)
-      })
+    it('should update fields', async () => {
+      const department = await factory.create<Department>('department')
+      const dep_attrs = await factory.attrs<Department>('department')
+      request(app)
+        .put(`/api/departments/${department.id}`)
+        .send({ name: dep_attrs.name, address: dep_attrs.address })
+        .expect(200)
+        .expect(res => {
+          assert.ok(res.body.data)
+          assert.equal(res.body.data.name, dep_attrs.name)
+          assert.equal(res.body.data.address, dep_attrs.address)
+          assert.equal(res.body.data.code, department.code)
+        })
     })
 
     context('given a fake id', () => {
@@ -125,18 +116,15 @@ describe('Departments', () => {
   })
 
   describe('DELETE /departments/:id', () => {
-    it('should DELETE a specific department', done => {
-      const department = new Department(data)
-      department.save((err, department) => {
-        request(app)
-          .delete(`/api/departments/${department.id}`)
-          .expect(200)
-          .expect(res => {
-            assert.ok(res.body.data)
-            assert.equal(res.body.data.code, department.code)
-          })
-          .end(done)
-      })
+    it('should DELETE a specific department', async () => {
+      const department = await factory.create<Department>('department')
+      request(app)
+        .delete(`/api/departments/${department.id}`)
+        .expect(200)
+        .expect(res => {
+          assert.ok(res.body.data)
+          assert.equal(res.body.data.code, department.code)
+        })
     })
 
     context('given a fake id', () => {
