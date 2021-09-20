@@ -2,12 +2,14 @@ import '../config'
 import request from 'supertest'
 import assert from 'assert'
 import app from '../../src/app'
-import { Bike, Officer } from '../../src/models'
+import { Bike, Department, Officer } from '../../src/models'
 import { factory } from '../factories'
 
 describe('Bikes', () => {
-  beforeEach( done => {
-    Bike.deleteMany({}, done)
+  beforeEach( async () => {
+    await Bike.deleteMany({})
+    await Officer.deleteMany({})
+    await Department.deleteMany({})
   })
 
   describe('GET /bikes', () => {
@@ -68,6 +70,22 @@ describe('Bikes', () => {
         })
     })
 
+    it('should assign a officer to the case', async () => {
+      const officer = await factory.create<Officer>('officer')
+      const bike_attrs = await factory.attrs<Bike>('bike')
+
+      request(app)
+        .post('/api/bikes')
+        .send(bike_attrs)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(201)
+        .expect(res => {
+          assert.ok(res.body.data)
+          assert.equal(res.body.data.officer, officer.id)
+        })
+    })
+
     context('given incomplete data', () => {
       it('should throw a error', async () => {
         const data = await factory.attrs<Bike>('bike')
@@ -97,6 +115,24 @@ describe('Bikes', () => {
           assert.equal(res.body.data.color, 'white')
           assert.equal(res.body.data.license_number, bike.license_number)
         })
+    })
+
+    context('updating a report as closed', () => {
+      it('should assign a new case to the officer', async () => {
+        const officer = await factory.create<Officer>('officer')
+        const bike1 = await factory.create<Bike>('bike')
+        const bike2 = await factory.create<Bike>('bike')
+
+        request(app)
+          .put(`/api/bikes/${bike1.id}`)
+          .send({ status_case: 'closed' })
+          .expect(200)
+          .expect(res => {
+            assert.ok(res.body.data)
+            assert.equal(res.body.data.status_case, 'closed')
+            assert.equal(officer.actual_case, bike2.id)
+          })
+      })
     })
 
     context('given a fake id', () => {
