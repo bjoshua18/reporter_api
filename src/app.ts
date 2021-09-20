@@ -3,7 +3,8 @@ import dotenv from 'dotenv'
 import morgan from 'morgan'
 import cors from 'cors'
 import { bike, department } from './routes'
-import {startConnection} from './database'
+import { startConnection } from './database'
+import { queryToLowerCase } from './middlewares/utils'
 
 const app = express()
 dotenv.config()
@@ -17,6 +18,7 @@ if (process.env.ENV !== 'test')
   app.use(morgan('dev'))
 app.use(cors())
 app.use(express.json())
+app.use(queryToLowerCase)
 
 // Routes
 app.use('/api/bikes', bike)

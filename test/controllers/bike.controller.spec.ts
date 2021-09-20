@@ -2,7 +2,7 @@ import '../config'
 import request from 'supertest'
 import assert from 'assert'
 import app from '../../src/app'
-import { Bike } from '../../src/models'
+import { Bike, Officer } from '../../src/models'
 import { factory } from '../factories'
 
 describe('Bikes', () => {
@@ -136,6 +136,44 @@ describe('Bikes', () => {
             assert.equal(res.body.status, 'not-found')
           })
           .end(done)
+      })
+    })
+  })
+
+  describe('GET /search?', () => {
+    context('given some attributes to filter and search', () => {
+      it('should returns correct filtered bike reports', async () => {
+        await factory.create<Bike>('bike', { color: 'white', type: 'sport' })
+        await factory.create<Bike>('bike', { color: 'white' })
+        await factory.create<Bike>('bike')
+        const query = 'color=white&type=sport'
+
+        request(app)
+          .get(`/search?${query}`)
+          .expect(200)
+          .expect(res => {
+            assert.ok(res.body.data)
+            assert.ok(Array.isArray(res.body.data))
+            assert.equal(res.body.data.length,1)
+            assert.equal(res.body.data[0].color, 'white')
+            assert.equal(res.body.data[0].type, 'sport')
+          })
+      })
+
+      context('searching a bike report with officer assigned', () => {
+        it('should returns officer data and department data', async () => {
+          const officer = await factory.create<Officer>('officer')
+          const bike = await factory.create<Bike>('bike', { officer: officer.id })
+
+          request(app)
+            .get(`/search?license_number=${bike.license_number}`)
+            .expect(200)
+            .expect(res => {
+              assert.ok(Array.isArray(res.body.data))
+              assert.ok(res.body.data[0].officer._id)
+              assert.ok(res.body.data[0].officer.department._id)
+            })
+        })
       })
     })
   })
