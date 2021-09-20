@@ -28,6 +28,7 @@
     "@types/supertest": "^2.0.11",
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
+    "factory-bot": "^6.2.1",
     "mocha": "^9.1.1",
     "nodemon": "^2.0.12",
     "supertest": "^6.1.6",

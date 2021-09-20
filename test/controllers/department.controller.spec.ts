@@ -2,45 +2,46 @@ import '../config'
 import request from 'supertest'
 import assert from 'assert'
 import app from '../../src/app'
-import { Bike } from '../../src/models'
+import { Department } from '../../src/models'
 import { factory } from '../factories'
 
-describe('Bikes', () => {
-  beforeEach( done => {
-    Bike.deleteMany({}, done)
+describe('Departments', () => {
+  beforeEach(done => {
+    Department.deleteMany({}, done)
   })
 
-  describe('GET /bikes', () => {
-    it('should GET all bike reports', async () => {
-      await factory.createMany<Bike>('bike', 3)
+  describe('GET /departments', () => {
+    it('should GET all departments', async () => {
+      await factory.createMany<Department>('department', 3)
       request(app)
-        .get('/api/bikes')
+        .get('/api/departments')
         .expect('Content-Type', /json/)
         .expect(200)
         .expect(res => {
+          assert.equal(res.body.status, 'OK')
           assert.ok(res.body.data)
           assert.ok(Array.isArray(res.body.data))
-          assert.equal(res.body.data.length,3)
+          assert.equal(res.body.data.length, 3)
         })
     })
   })
 
-  describe('GET /bikes/:id', () => {
-    it('should GET a specific bike report', async () => {
-      const bike = await factory.create<Bike>('bike')
+  describe('GET /departments/:id', () => {
+    it('should GET a specific department', async () => {
+      const department = await factory.create<Department>('department')
       request(app)
-        .get(`/api/bikes/${bike.id}`)
+        .get(`/api/departments/${department.id}`)
         .expect(200)
         .expect(res => {
           assert.ok(res.body.data)
-          assert.equal(res.body.data.license_number, bike.license_number)
+          assert.equal(res.body.data.code, department.code)
         })
     })
 
     context('given a fake id', () => {
       it('should GET a 404 error', done => {
         request(app)
-          .get('/api/bikes/6144c984ab0101a701ade319')
+          .get('/api/departments/6144c984ab0101a701ade319')
           .expect(404)
           .expect(res => {
             assert.ok(res.body.error)
@@ -51,12 +52,12 @@ describe('Bikes', () => {
     })
   })
 
-  describe('POST /bikes', () => {
-    it('should save a bike report', async () => {
-      const data = await factory.attrs<Bike>('bike')
+  describe('POST /departments', () => {
+    it('should save a department', async () => {
+      const dep_attrs = await factory.attrs<Department>('department')
       request(app)
-        .post('/api/bikes')
-        .send(data)
+        .post('/api/departments')
+        .send(dep_attrs)
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(201)
@@ -64,18 +65,17 @@ describe('Bikes', () => {
           assert.ok(res.body.data)
           assert.ok(res.body.data._id)
           assert.equal(res.body.status, 'created')
-          assert.equal(res.body.data.license_number, data.license_number)
+          assert.equal(res.body.data.code, dep_attrs.code)
         })
     })
 
     context('given incomplete data', () => {
       it('should throw a error', async () => {
-        const data = await factory.attrs<Bike>('bike')
+        const dep_attrs = await factory.attrs<Department>('department')
         request(app)
-          .post('/api/bikes')
-          .send({...data, license_number: null})
+          .post('/api/departments')
+          .send({...dep_attrs, code: null})
           .set('Accept', 'application/json')
-          .expect('Content-Type', /json/)
           .expect(500)
           .expect(res => {
             assert.ok(res.body.error)
@@ -84,26 +84,27 @@ describe('Bikes', () => {
     })
   })
 
-  describe('PUT /bikes/:id', () => {
+  describe('PUT /departments/:id', () => {
     it('should update fields', async () => {
-      const bike = await factory.create<Bike>('bike')
+      const department = await factory.create<Department>('department')
+      const dep_attrs = await factory.attrs<Department>('department')
       request(app)
-        .put(`/api/bikes/${bike.id}`)
-        .send({ owner_name: 'Anonymous', color: 'white' })
+        .put(`/api/departments/${department.id}`)
+        .send({ name: dep_attrs.name, address: dep_attrs.address })
         .expect(200)
         .expect(res => {
           assert.ok(res.body.data)
-          assert.equal(res.body.data.owner_name, 'Anonymous')
-          assert.equal(res.body.data.color, 'white')
-          assert.equal(res.body.data.license_number, bike.license_number)
+          assert.equal(res.body.data.name, dep_attrs.name)
+          assert.equal(res.body.data.address, dep_attrs.address)
+          assert.equal(res.body.data.code, department.code)
         })
     })
 
     context('given a fake id', () => {
       it('should get a 404 error', done => {
         request(app)
-          .put('/api/bikes/6144c984ab0101a701ade319')
-          .send({ owner_name: 'Anonymous', color: 'white' })
+          .put('/api/departments/6144c984ab0101a701ade319')
+          .send({ name: 'Other name', address: 'Other address' })
           .expect(404)
           .expect(res => {
             assert.ok(res.body.error)
@@ -114,22 +115,22 @@ describe('Bikes', () => {
     })
   })
 
-  describe('DELETE /bikes/:id', () => {
-    it('should DELETE a specific bike report', async () => {
-      const bike = await factory.create<Bike>('bike')
+  describe('DELETE /departments/:id', () => {
+    it('should DELETE a specific department', async () => {
+      const department = await factory.create<Department>('department')
       request(app)
-        .delete(`/api/bikes/${bike.id}`)
+        .delete(`/api/departments/${department.id}`)
         .expect(200)
         .expect(res => {
           assert.ok(res.body.data)
-          assert.equal(res.body.data.license_number, bike.license_number)
+          assert.equal(res.body.data.code, department.code)
         })
     })
 
     context('given a fake id', () => {
       it('should get a 404 error', done => {
         request(app)
-          .delete('/api/bikes/6144c984ab0101a701ade319')
+          .delete('/api/departments/6144c984ab0101a701ade319')
           .expect(404)
           .expect(res => {
             assert.ok(res.body.error)

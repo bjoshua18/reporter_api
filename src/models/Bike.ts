@@ -1,4 +1,5 @@
 import { model, Schema, Document } from 'mongoose'
+import { IOfficer } from './Officer'
 
 const schema = new Schema({
   license_number: { type: String, required: true, unique: true },
@@ -9,9 +10,10 @@ const schema = new Schema({
   address_theft: { type: String, required: true },
   status_case: { type: String, required: true, default: 'unsolved' },
   createdAt: { type: Date, required: true, default: Date.now },
+  officer: { ref: 'Officer', type: Schema.Types.ObjectId, default: null }
 })
 
-interface IBike extends Document {
+export interface IBike extends Document {
   license_number: string,
   color: string,
   type: string,
@@ -19,7 +21,8 @@ interface IBike extends Document {
   theft_description: string,
   address_theft: string,
   status_case: string,
-  createdAt: Date
+  createdAt: Date,
+  officer?: IOfficer['_id']
 }
 
-export default model<IBike>('Bike', schema)
+export default class Bike extends model<IBike>('Bike', schema) { }
