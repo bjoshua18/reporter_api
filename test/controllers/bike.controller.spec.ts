@@ -68,6 +68,22 @@ describe('Bikes', () => {
         })
     })
 
+    it('should assign a officer to the case', async () => {
+      const officer = await factory.create<Officer>('officer')
+      const bike_attrs = await factory.attrs<Bike>('bike')
+
+      request(app)
+        .post('/api/bikes')
+        .send(bike_attrs)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(201)
+        .expect(res => {
+          assert.ok(res.body.data)
+          assert.equal(res.body.data.officer, officer.id)
+        })
+    })
+
     context('given incomplete data', () => {
       it('should throw a error', async () => {
         const data = await factory.attrs<Bike>('bike')

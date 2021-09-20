@@ -1,5 +1,6 @@
 import { model, Schema, Document } from 'mongoose'
 import { IOfficer } from './Officer'
+import { Officer } from './index'
 
 const schema = new Schema({
   license_number: { type: String, required: true, unique: true },
@@ -11,6 +12,25 @@ const schema = new Schema({
   status_case: { type: String, required: true, default: 'unsolved' },
   createdAt: { type: Date, required: true, default: Date.now },
   officer: { ref: 'Officer', type: Schema.Types.ObjectId, default: null }
+})
+
+schema.post('save', async function (doc) {
+  if (!doc.officer) {
+    try {
+      const officers = await Officer.find({ actual_case: null})
+      if (officers.length > 0) {
+        const officer = officers[0]
+
+        doc.officer = officer.id
+        await doc.save()
+
+        officer.actual_case = doc.id
+        await officer.save()
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
 })
 
 export interface IBike extends Document {
