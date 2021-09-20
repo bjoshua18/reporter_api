@@ -75,6 +75,22 @@ export async function destroy(req: Request, res: Response): Promise<Response> {
   }
 }
 
+export async function search(req: Request, res: Response): Promise<Response> {
+  try {
+    const bikes = await Bike.find(getFilter(req.query)).populate({ path: 'officer', populate: { path: 'department' } })
+    return getResponse(res, { data: bikes })
+  } catch (e) {
+    return handlerError(e, res)
+  }
+}
+
+function getFilter(query: any): Object {
+  const { license_number, color, type, owner_name } = query
+  const filter: any = { license_number, color, type, owner_name }
+  Object.keys(filter).forEach(key => filter[key] === undefined && delete filter[key])
+  return filter
+}
+
 function BikeNotFoundResponse(res: Response) {
   return getResponse(res, { error: 'Bike report not found', status: 'not-found', status_code: 404 })
 }
