@@ -14,18 +14,35 @@ const schema = new Schema({
   officer: { ref: 'Officer', type: Schema.Types.ObjectId, default: null }
 })
 
-schema.post('save', async function (doc) {
+schema.post('save', async function (doc, next) {
   if (!doc.officer) {
     try {
-      const officers = await Officer.find({ actual_case: null})
-      if (officers.length > 0) {
-        const officer = officers[0]
-
+      const officer = await Officer.findOne({ actual_case: null })
+      if (officer) {
         doc.officer = officer.id
         await doc.save()
 
         officer.actual_case = doc.id
         await officer.save()
+      }
+    } catch (e) {
+      console.error(e)
+    } finally {
+      next()
+    }
+  }
+})
+
+schema.post('save', async function (doc) {
+  if (doc.status_case === 'closed') {
+    try {
+      const officer = await Officer.findById(doc.officer)
+      if (officer) {
+        const newCase = await Bike.findOne({ status_case: 'unsolved' })
+        if (newCase) {
+          officer.actual_case = newCase.id
+          await officer.save()
+        }
       }
     } catch (e) {
       console.error(e)

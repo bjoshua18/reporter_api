@@ -42,7 +42,7 @@ export async function store(req: Request, res: Response): Promise<Response> {
 }
 
 export async function update(req: Request, res: Response): Promise<Response> {
-  const { license_number, color, type, owner_name, theft_description, address_theft } = req.body
+  const { license_number, color, type, owner_name, theft_description, address_theft, status_case } = req.body
   try {
     const updatedBike = await Bike.findByIdAndUpdate(
       req.params.id,
@@ -52,7 +52,8 @@ export async function update(req: Request, res: Response): Promise<Response> {
         type,
         owner_name,
         theft_description,
-        address_theft
+        address_theft,
+        status_case
       },
       { new: true }
     )
