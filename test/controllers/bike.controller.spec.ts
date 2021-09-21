@@ -2,16 +2,10 @@ import '../config'
 import request from 'supertest'
 import assert from 'assert'
 import app from '../../src/app'
-import { Bike, Department, Officer } from '../../src/models'
+import { Bike, Officer } from '../../src/models'
 import { factory } from '../factories'
 
 describe('Bikes', () => {
-  beforeEach( async () => {
-    await Bike.deleteMany({})
-    await Officer.deleteMany({})
-    await Department.deleteMany({})
-  })
-
   describe('GET /bikes', () => {
     it('should GET all bike reports', async () => {
       await factory.createMany<Bike>('bike', 3)

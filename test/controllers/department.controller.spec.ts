@@ -6,10 +6,6 @@ import { Department } from '../../src/models'
 import { factory } from '../factories'
 
 describe('Departments', () => {
-  beforeEach(done => {
-    Department.deleteMany({}, done)
-  })
-
   describe('GET /departments', () => {
     it('should GET all departments', async () => {
       await factory.createMany<Department>('department', 3)

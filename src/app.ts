@@ -3,7 +3,6 @@ import dotenv from 'dotenv'
 import morgan from 'morgan'
 import cors from 'cors'
 import { bike, department } from './routes'
-import { startConnection } from './database'
 import { queryToLowerCase } from './middlewares/utils'
 
 const app = express()
@@ -11,7 +10,6 @@ dotenv.config()
 
 // Settings
 app.set('port', process.env.PORT || 3000)
-startConnection()
 
 // Middlewares
 if (process.env.ENV !== 'test')
