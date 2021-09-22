@@ -1,0 +1,30 @@
+components:
+  requestBodies:
+    BikeBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              license_number:
+                type: string
+                description: Bike License Number
+              color:
+                type: string
+                description: Bike Color
+              type:
+                type: string
+                description: Bike type (standard, sport, etc)
+              owner_name:
+                type: string
+                description: Bike owner's name
+              theft_description:
+                type: string
+                description: Detailed description of the theft or loss
+              address_theft:
+                type: string
+                description: Address where the theft occurred
+              status_case:
+                type: string
+                description: Status of the case

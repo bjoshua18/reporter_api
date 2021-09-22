@@ -1,0 +1,184 @@
+paths:
+  /departments/{dep_id}/officers:
+    get:
+      summary: REturns the list of all officer of a department by ID
+      tags: [Officers]
+      parameters:
+        - in: path
+          name: dep_id
+          schema:
+            type: string
+          required: true
+          description: The Department ID
+      responses:
+        200:
+          description: The list of officers of a specific department
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Officer'
+                    description: All officers of a department by ID
+                  status:
+                    type: string
+                    description: Info about status response
+                    default: OK
+                  status_code:
+                    type: number
+                    description: Status code response
+                    default: 200
+        5XX:
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Create a new officer
+      tags: [Officers]
+      parameters:
+        - in: path
+          name: dep_id
+          schema:
+            type: string
+          required: true
+          description: The Department ID
+      requestBody:
+        $ref: '#/components/requestBodies/OfficerBody'
+      responses:
+        201:
+          description: The officer created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Officer'
+                  status:
+                    type: string
+                    description: Info about status response
+                    default: created
+                  status_code:
+                    type: number
+                    description: Status code response
+                    default: 201
+        5XX:
+          $ref: '#/components/responses/ServerError'
+  /departments/{dep_id}/officers/{officer_id}:
+    get:
+      summary: Get the officer by ID
+      tags: [Officers]
+      parameters:
+        - in: path
+          name: dep_id
+          schema:
+            type: string
+          required: true
+          description: The Department ID
+        - in: path
+          name: officer_id
+          schema:
+            type: string
+          required: true
+          description: The Officer ID
+      responses:
+        200:
+          description: Officer data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Officer'
+                  status:
+                    type: string
+                    description: Info about status response
+                    default: OK
+                  status_code:
+                    type: number
+                    description: Status code response
+                    default: 200
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        5XX:
+          $ref: '#/components/responses/ServerError'
+    put:
+      summary: Update the officer by ID
+      tags: [Officers]
+      parameters:
+        - in: path
+          name: dep_id
+          schema:
+            type: string
+          required: true
+          description: The Department ID
+        - in: path
+          name: officer_id
+          schema:
+            type: string
+          required: true
+          description: The Officer ID
+      requestBody:
+        $ref: '#/components/requestBodies/OfficerBody'
+      responses:
+        200:
+          description: Officer updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Officer'
+                  status:
+                    type: string
+                    description: Info about status response
+                    default: OK
+                  status_code:
+                    type: number
+                    description: Status code response
+                    default: 200
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        5XX:
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Remove the officer by ID
+      tags: [Officers]
+      parameters:
+        - in: path
+          name: dep_id
+          schema:
+            type: string
+          required: true
+          description: The Department ID
+        - in: path
+          name: officer_id
+          schema:
+            type: string
+          required: true
+          description: The Officer ID
+      responses:
+        200:
+          description: Officer deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Officer'
+                  status:
+                    type: string
+                    description: Info about status response
+                    default: OK
+                  status_code:
+                    type: number
+                    description: Status code response
+                    default: 200
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        5XX:
+          $ref: '#/components/responses/ServerError'

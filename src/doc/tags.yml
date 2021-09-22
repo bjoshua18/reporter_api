@@ -1,0 +1,7 @@
+tags:
+  - name: Bikes
+    description: The bike reports managing API
+  - name: Departments
+    description: The departments managing API
+  - name: Officers
+    description: The officers managing API

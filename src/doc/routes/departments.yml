@@ -1,0 +1,150 @@
+paths:
+  /departments:
+    get:
+      summary: Returns the list of all departments
+      tags: [Departments]
+      responses:
+        200:
+          description: The list of departments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Department'
+                    description: All departments
+                  status:
+                    type: string
+                    description: Info about status response
+                    default: OK
+                  status_code:
+                    type: number
+                    description: Status code response
+                    default: 200
+        5XX:
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Create a new department
+      tags: [Departments]
+      requestBody:
+        $ref: '#/components/requestBodies/DepartmentBody'
+      responses:
+        201:
+          description: The department created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Department'
+                  status:
+                    type: string
+                    description: Info about status response
+                    default: created
+                  status_code:
+                    type: number
+                    description: Status code response
+                    default: 201
+        5XX:
+          $ref: '#/components/responses/ServerError'
+  /departments/{id}:
+    get:
+      summary: Get the department by ID
+      tags: [Departments]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The Department ID
+      responses:
+        200:
+          description: Department data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Department'
+                  status:
+                    type: string
+                    description: Info about status response
+                    default: OK
+                  status_code:
+                    type: number
+                    description: Status code response
+                    default: 200
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        5XX:
+          $ref: '#/components/responses/ServerError'
+    put:
+      summary: Update the department by ID
+      tags: [Departments]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The department ID
+      requestBody:
+        $ref: '#/components/requestBodies/DepartmentBody'
+      responses:
+        200:
+          description: Department updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Department'
+                  status:
+                    type: string
+                    description: Info about status response
+                    default: OK
+                  status_code:
+                    type: number
+                    description: Status code response
+                    default: 200
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        5XX:
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Remove the department by ID
+      tags: [Departments]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+      responses:
+        200:
+          description: Department deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Department'
+                  status:
+                    type: string
+                    description: Info about status response
+                    default: OK
+                  status_code:
+                    type: number
+                    description: Status code response
+                    default: 200
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        5XX:
+          $ref: '#/components/responses/ServerError'
