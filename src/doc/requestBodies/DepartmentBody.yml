@@ -1,0 +1,15 @@
+components:
+  requestBodies:
+    DepartmentBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Department name
+              address:
+                type: string
+                description: Department address
