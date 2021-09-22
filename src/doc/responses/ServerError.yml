@@ -1,0 +1,22 @@
+components:
+  responses:
+    ServerError:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                description: Error message
+              status:
+                type: string
+                description: Info about status response
+              status_code:
+                type: string
+                description: Status code response
+            example:
+              error: Unexpected error
+              status: server-error
+              status_code: 500

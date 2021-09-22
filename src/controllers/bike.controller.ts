@@ -78,7 +78,10 @@ export async function destroy(req: Request, res: Response): Promise<Response> {
 
 export async function search(req: Request, res: Response): Promise<Response> {
   try {
-    const bikes = await Bike.find(getFilter(req.query)).populate({ path: 'officer', populate: { path: 'department' } })
+    const filter = getFilter(req.query)
+    const bikes = Object.keys(filter).length > 0
+      ? await Bike.find(filter).populate({ path: 'officer', populate: { path: 'department' } })
+      : []
     return getResponse(res, { data: bikes })
   } catch (e) {
     return handlerError(e, res)

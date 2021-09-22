@@ -1,0 +1,181 @@
+paths:
+  /bikes:
+    get:
+      summary: Returns the list of all bike reports
+      tags: [Bikes]
+      responses:
+        200:
+          description: The list of bike reports
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Bike'
+                    description: All bike reports
+                  status:
+                    type: string
+                    description: Info about status response
+                    default: OK
+                  status_code:
+                    type: number
+                    description: Status code response
+                    default: 200
+        5XX:
+          $ref: '#components/responses/ServerError'
+    post:
+      summary: Create a new bike report
+      tags: [Bikes]
+      requestBody:
+        $ref: '#components/requestBodies/BikeBody'
+      responses:
+        201:
+          description: The bike report created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#components/schemas/Bike'
+                  status:
+                    type: string
+                    description: Info about status response
+                    default: created
+                  status_code:
+                    type: number
+                    description: Status code response
+                    default: 201
+        5XX:
+          $ref: '#components/responses/ServerError'
+  /bikes/{id}:
+    get:
+      summary: Get the bike report by ID
+      tags: [Bikes]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The Bike ID
+      responses:
+        200:
+          description: Bike report data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#components/schemas/Bike'
+                  status:
+                    type: string
+                    description: Info about status response
+                    default: OK
+                  status_code:
+                    type: number
+                    description: Status code response
+                    default: 200
+        404:
+          $ref: '#components/responses/NotFoundError'
+        5XX:
+          $ref: '#components/responses/ServerError'
+    put:
+      summary: Update the bike report by ID
+      tags: [Bikes]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The bike report ID
+      requestBody:
+        $ref: '#components/requestBodies/BikeBody'
+      responses:
+        200:
+          description: Bike report updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#components/schemas/Bike'
+                  status:
+                    type: string
+                    description: Info about status response
+                    default: OK
+                  status_code:
+                    type: number
+                    description: Status code response
+                    default: 200
+        404:
+          $ref: '#components/responses/NotFoundError'
+        5XX:
+          $ref: '#components/responses/ServerError'
+    delete:
+      summary: Remove the bike report by ID
+      tags: [Bikes]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+      responses:
+        200:
+          description: Bike report deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#components/schemas/Bike'
+                  status:
+                    type: string
+                    description: Info about status response
+                    default: OK
+                  status_code:
+                    type: number
+                    description: Status code response
+                    default: 200
+        404:
+          $ref: '#components/responses/NotFoundError'
+        5XX:
+          $ref: '#components/responses/ServerError'
+/bikes/search:
+  get:
+    summary: Returns a list of filtered bike reports by query
+    tags: [Bikes]
+    parameters:
+      - in: query
+        name: license_number
+      - in: query
+        name: color
+    responses:
+      200:
+        description: The list of filtered bike reports
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Bike'
+                status:
+                  type: string
+                  description: Info about status response
+                  default: OK
+                status_code:
+                  type: number
+                  description: Status code response
+                  default: 200
+      5XX:
+        $ref: '#components/responses/ServerError'

@@ -1,0 +1,22 @@
+components:
+  responses:
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                description: NotFound message
+              status:
+                type: string
+                description: Info about status response
+              status_code:
+                type: string
+                description: Status code response
+            example:
+              error: Resource not found
+              status: not-found
+              status_code: 404
