@@ -35,11 +35,11 @@ export async function store(req: Request, res: Response): Promise<Response> {
 }
 
 export async function update(req: Request, res: Response): Promise<Response> {
-  const { name, address } = req.body
+  const { code, name, address } = req.body
   try {
     const updatedDepartment = await Department.findByIdAndUpdate(
       req.params.id,
-      { name, address },
+      { code, name, address },
       { new: true }
     )
     return updatedDepartment

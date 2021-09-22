@@ -1,11 +1,18 @@
 paths:
-  /bikes:
+  /departments/{dep_id}/officers:
     get:
-      summary: Returns the list of all bike reports
-      tags: [Bikes]
+      summary: REturns the list of all officer of a department by ID
+      tags: [Officers]
+      parameters:
+        - in: path
+          name: dep_id
+          schema:
+            type: string
+          required: true
+          description: The Department ID
       responses:
         200:
-          description: The list of bike reports
+          description: The list of officers of a specific department
           content:
             application/json:
               schema:
@@ -14,8 +21,8 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Bike'
-                    description: All bike reports
+                      $ref: '#/components/schemas/Officer'
+                    description: All officers of a department by ID
                   status:
                     type: string
                     description: Info about status response
@@ -27,20 +34,27 @@ paths:
         5XX:
           $ref: '#/components/responses/ServerError'
     post:
-      summary: Create a new bike report
-      tags: [Bikes]
+      summary: Create a new officer
+      tags: [Officers]
+      parameters:
+        - in: path
+          name: dep_id
+          schema:
+            type: string
+          required: true
+          description: The Department ID
       requestBody:
-        $ref: '#/components/requestBodies/BikeBody'
+        $ref: '#/components/requestBodies/OfficerBody'
       responses:
         201:
-          description: The bike report created successfully
+          description: The officer created successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Bike'
+                    $ref: '#/components/schemas/Officer'
                   status:
                     type: string
                     description: Info about status response
@@ -51,27 +65,33 @@ paths:
                     default: 201
         5XX:
           $ref: '#/components/responses/ServerError'
-  /bikes/{id}:
+  /departments/{dep_id}/officers/{officer_id}:
     get:
-      summary: Get the bike report by ID
-      tags: [Bikes]
+      summary: Get the officer by ID
+      tags: [Officers]
       parameters:
         - in: path
-          name: id
+          name: dep_id
           schema:
             type: string
           required: true
-          description: The Bike ID
+          description: The Department ID
+        - in: path
+          name: officer_id
+          schema:
+            type: string
+          required: true
+          description: The Officer ID
       responses:
         200:
-          description: Bike report data
+          description: Officer data
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Bike'
+                    $ref: '#/components/schemas/Officer'
                   status:
                     type: string
                     description: Info about status response
@@ -85,27 +105,33 @@ paths:
         5XX:
           $ref: '#/components/responses/ServerError'
     put:
-      summary: Update the bike report by ID
-      tags: [Bikes]
+      summary: Update the officer by ID
+      tags: [Officers]
       parameters:
         - in: path
-          name: id
+          name: dep_id
           schema:
             type: string
           required: true
-          description: The bike report ID
+          description: The Department ID
+        - in: path
+          name: officer_id
+          schema:
+            type: string
+          required: true
+          description: The Officer ID
       requestBody:
-        $ref: '#/components/requestBodies/BikeBody'
+        $ref: '#/components/requestBodies/OfficerBody'
       responses:
         200:
-          description: Bike report updated
+          description: Officer updated
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Bike'
+                    $ref: '#/components/schemas/Officer'
                   status:
                     type: string
                     description: Info about status response
@@ -119,23 +145,31 @@ paths:
         5XX:
           $ref: '#/components/responses/ServerError'
     delete:
-      summary: Remove the bike report by ID
-      tags: [Bikes]
+      summary: Remove the officer by ID
+      tags: [Officers]
       parameters:
         - in: path
-          name: id
+          name: dep_id
           schema:
             type: string
+          required: true
+          description: The Department ID
+        - in: path
+          name: officer_id
+          schema:
+            type: string
+          required: true
+          description: The Officer ID
       responses:
         200:
-          description: Bike report deleted
+          description: Officer deleted
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Bike'
+                    $ref: '#/components/schemas/Officer'
                   status:
                     type: string
                     description: Info about status response
@@ -148,34 +182,3 @@ paths:
           $ref: '#/components/responses/NotFoundError'
         5XX:
           $ref: '#/components/responses/ServerError'
-/bikes/search:
-  get:
-    summary: Returns a list of filtered bike reports by query
-    tags: [Bikes]
-    parameters:
-      - in: query
-        name: license_number
-      - in: query
-        name: color
-    responses:
-      200:
-        description: The list of filtered bike reports
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                data:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Bike'
-                status:
-                  type: string
-                  description: Info about status response
-                  default: OK
-                status_code:
-                  type: number
-                  description: Status code response
-                  default: 200
-      5XX:
-        $ref: '#/components/responses/ServerError'

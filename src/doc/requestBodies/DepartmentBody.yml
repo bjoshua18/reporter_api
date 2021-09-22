@@ -7,6 +7,9 @@ components:
           schema:
             type: object
             properties:
+              code:
+                type: string
+                description: The code of department
               name:
                 type: string
                 description: Department name

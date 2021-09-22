@@ -36,11 +36,11 @@ export async function store(req: Request, res: Response): Promise<Response> {
 
 export async function update(req: Request, res: Response): Promise<Response> {
   const { department } = res.locals
-  const { name } = req.body
+  const { plate_number, name } = req.body
   try {
     const officer = await Officer.findOneAndUpdate(
       { id: req.params.officer_id, department: department.id},
-      { name },
+      { plate_number, name },
       { new: true }
     )
     return officer
