@@ -131,8 +131,8 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
-!dist/doc
+dist/*
+!dist/doc/
 
 # Gatsby files
 .cache/
