@@ -17,7 +17,7 @@ const options = {
     },
     servers: [{ url: 'http://localhost:3000/api' }]
   },
-  apis: [`${__dirname}/doc/**/*.yml`]
+  apis: [`${__dirname}/../doc/**/*.yml`]
 }
 
 const specs = swaggerJsDoc(options)
