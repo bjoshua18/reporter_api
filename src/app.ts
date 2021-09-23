@@ -15,7 +15,16 @@ const options = {
       version: '1.0.0',
       description: 'API to manage bike theft reports'
     },
-    servers: [{ url: 'http://localhost:3000/api' }]
+    servers: [
+      {
+        url: 'https://bike-reporter-api-node.herokuapp.com/api',
+        description: 'Production server'
+      },
+      {
+        url: 'http://localhost:3000/api',
+        description: 'Local server'
+      }
+    ]
   },
   apis: [`${__dirname}/../doc/**/*.yml`]
 }
